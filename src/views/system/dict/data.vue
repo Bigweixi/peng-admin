@@ -102,9 +102,9 @@
             </template>
          </el-table-column>
          <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-         <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+         <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
             <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime) }}</span>
+               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
          </el-table-column>
          <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
@@ -128,7 +128,7 @@
       <pagination
          v-show="total > 0"
          :total="total"
-         v-model:page="queryParams.pageNum"
+         v-model:page="queryParams.page"
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
@@ -216,7 +216,7 @@ const listClassOptions = ref([
 const data = reactive({
   form: {},
   queryParams: {
-    pageNum: 1,
+    page: 1,
     pageSize: 10,
     dictName: undefined,
     dictType: undefined,
@@ -250,8 +250,8 @@ function getTypeList() {
 function getList() {
   loading.value = true;
   listData(queryParams.value).then(response => {
-    dataList.value = response.rows;
-    total.value = response.total;
+    dataList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -276,7 +276,7 @@ function reset() {
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1;
+  queryParams.value.page = 1;
   getList();
 }
 /** 返回按钮操作 */
@@ -318,7 +318,7 @@ function submitForm() {
   proxy.$refs["dataRef"].validate(valid => {
     if (valid) {
       if (form.value.dictCode != undefined) {
-        updateData(form.value).then(response => {
+        updateData(form.value, form.value.dictCode).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();

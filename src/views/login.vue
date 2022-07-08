@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">若依后台管理系统</h3>
+      <h3 class="title">后花园管理系统</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -31,7 +31,7 @@
           size="large"
           auto-complete="off"
           placeholder="验证码"
-          style="width: 63%"
+          style="width: 50%"
           @keyup.enter="handleLogin"
         >
           <template #prefix><svg-icon icon-class="validCode" class="el-input__icon input-icon" /></template>
@@ -75,8 +75,8 @@ const router = useRouter();
 const { proxy } = getCurrentInstance();
 
 const loginForm = ref({
-  username: "admin",
-  password: "admin123",
+  username: "15306055071",
+  password: "prw123",
   rememberMe: false,
   code: "",
   uuid: ""
@@ -127,10 +127,9 @@ function handleLogin() {
 
 function getCode() {
   getCodeImg().then(res => {
-    captchaOnOff.value = res.captchaOnOff === undefined ? true : res.captchaOnOff;
+    captchaOnOff.value = res.data.captchaOnOff === undefined ? true : res.data.captchaOnOff;
     if (captchaOnOff.value) {
-      codeUrl.value = "data:image/gif;base64," + res.img;
-      loginForm.value.uuid = res.uuid;
+      codeUrl.value = res.data.base64;
     }
   });
 }
@@ -188,7 +187,7 @@ getCookie();
   color: #bfbfbf;
 }
 .login-code {
-  width: 33%;
+  width: 37%;
   height: 40px;
   float: right;
   img {
