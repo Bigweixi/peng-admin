@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询参数列表
 export function listConfig(query) {
   return request({
-    url: '/system/config/list',
+    url: '/system/config',
     method: 'get',
     params: query
   })
@@ -20,7 +20,7 @@ export function getConfig(configId) {
 // 根据参数键名查询参数值
 export function getConfigKey(configKey) {
   return request({
-    url: '/system/config/configKey/' + configKey,
+    url: '/config/configKey/' + configKey,
     method: 'get'
   })
 }
@@ -35,9 +35,9 @@ export function addConfig(data) {
 }
 
 // 修改参数配置
-export function updateConfig(data) {
+export function updateConfig(data, configId) {
   return request({
-    url: '/system/config',
+    url: '/system/config/' + configId,
     method: 'put',
     data: data
   })

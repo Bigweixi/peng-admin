@@ -68,7 +68,7 @@
 
       <el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="序号" align="center" prop="noticeId" width="100" />
+         <el-table-column label="序号" align="center" prop="id" width="100" />
          <el-table-column
             label="公告标题"
             align="center"
@@ -86,9 +86,9 @@
             </template>
          </el-table-column>
          <el-table-column label="创建者" align="center" prop="createBy" width="100" />
-         <el-table-column label="创建时间" align="center" prop="createTime" width="100">
+         <el-table-column label="创建时间" align="center" prop="createdAt" width="100">
             <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
+               <span>{{ parseTime(scope.row.createdAt, '{y}-{m}-{d}') }}</span>
             </template>
          </el-table-column>
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -112,7 +112,7 @@
       <pagination
          v-show="total > 0"
          :total="total"
-         v-model:page="queryParams.pageNum"
+         v-model:page="queryParams.page"
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
@@ -190,7 +190,7 @@ const title = ref("");
 const data = reactive({
   form: {},
   queryParams: {
-    pageNum: 1,
+    page: 1,
     pageSize: 10,
     noticeTitle: undefined,
     createBy: undefined,
@@ -208,8 +208,8 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listNotice(queryParams.value).then(response => {
-    noticeList.value = response.rows;
-    total.value = response.total;
+    noticeList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -221,17 +221,17 @@ function cancel() {
 /** 表单重置 */
 function reset() {
   form.value = {
-    noticeId: undefined,
+    id: undefined,
     noticeTitle: undefined,
     noticeType: undefined,
     noticeContent: undefined,
-    status: "0"
+    status: "1"
   };
   proxy.resetForm("noticeRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1;
+  queryParams.value.page = 1;
   getList();
 }
 /** 重置按钮操作 */
@@ -241,7 +241,7 @@ function resetQuery() {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.noticeId);
+  ids.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -254,7 +254,7 @@ function handleAdd() {
 /**修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const noticeId = row.noticeId || ids.value;
+  const noticeId = row.id || ids.value;
   getNotice(noticeId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -265,8 +265,8 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["noticeRef"].validate(valid => {
     if (valid) {
-      if (form.value.noticeId != undefined) {
-        updateNotice(form.value).then(response => {
+      if (form.value.id != undefined) {
+        updateNotice(form.value, form.value.id).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
@@ -283,7 +283,7 @@ function submitForm() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const noticeIds = row.noticeId || ids.value
+  const noticeIds = row.id || ids.value
   proxy.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
     return delNotice(noticeIds);
   }).then(() => {

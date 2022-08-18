@@ -9,7 +9,6 @@ const useUserStore = defineStore(
       token: getToken(),
       name: '',
       avatar: '',
-      roles: [],
       permissions: []
     }),
     actions: {
@@ -35,13 +34,7 @@ const useUserStore = defineStore(
           getInfo().then(res => {
             const user = res.data.user
             const avatar = (user.avatar == "" || user.avatar == null) ? defAva : user.avatar;
-
-            if (res.data.roles && res.data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-              this.roles = res.data.roles
-              this.permissions = res.data.permissions
-            } else {
-              this.roles = ['ROLE_DEFAULT']
-            }
+            this.permissions = res.data.permissions
             this.name = user.name
             this.avatar = avatar;
             resolve(res)
@@ -55,7 +48,6 @@ const useUserStore = defineStore(
         return new Promise((resolve, reject) => {
           logout(this.token).then(() => {
             this.token = ''
-            this.roles = []
             this.permissions = []
             removeToken()
             resolve()

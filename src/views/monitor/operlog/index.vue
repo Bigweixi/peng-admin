@@ -99,7 +99,7 @@
 
       <el-table ref="operlogRef" v-loading="loading" :data="operlogList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
          <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="日志编号" align="center" prop="operId" />
+         <el-table-column label="日志编号" align="center" prop="id" />
          <el-table-column label="系统模块" align="center" prop="title" />
          <el-table-column label="操作类型" align="center" prop="businessType">
             <template #default="scope">
@@ -134,7 +134,7 @@
       <pagination
          v-show="total > 0"
          :total="total"
-         v-model:page="queryParams.pageNum"
+         v-model:page="queryParams.page"
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
@@ -164,15 +164,15 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="操作状态：">
-                     <div v-if="form.status === 0">正常</div>
-                     <div v-else-if="form.status === 1">失败</div>
+                     <div v-if="form.status === 1">正常</div>
+                     <div v-else-if="form.status === 0">失败</div>
                   </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="操作时间：">{{ parseTime(form.operTime) }}</el-form-item>
                </el-col>
                <el-col :span="24">
-                  <el-form-item label="异常信息：" v-if="form.status === 1">{{ form.errorMsg }}</el-form-item>
+                  <el-form-item label="异常信息：" v-if="form.status === 0">{{ form.errorMsg }}</el-form-item>
                </el-col>
             </el-row>
          </el-form>
@@ -206,7 +206,7 @@ const defaultSort = ref({ prop: "operTime", order: "descending" });
 const data = reactive({
   form: {},
   queryParams: {
-    pageNum: 1,
+    page: 1,
     pageSize: 10,
     title: undefined,
     operName: undefined,
@@ -220,9 +220,9 @@ const { queryParams, form } = toRefs(data);
 /** 查询登录日志 */
 function getList() {
   loading.value = true;
-  list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    operlogList.value = response.rows;
-    total.value = response.total;
+  list(proxy.addDateRange(queryParams.value, dateRange.value, 'oper_time')).then(response => {
+    operlogList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -232,7 +232,7 @@ function typeFormat(row, column) {
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1;
+  queryParams.value.page = 1;
   getList();
 }
 /** 重置按钮操作 */

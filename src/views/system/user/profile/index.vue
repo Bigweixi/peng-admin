@@ -27,7 +27,9 @@
                      </li>
                      <li class="list-group-item">
                         <svg-icon icon-class="tree" />所属部门
-                        <div class="pull-right" v-if="state.user.dept">{{ state.user.dept.deptName }} / {{ state.postGroup }}</div>
+                        <el-tooltip class="item" v-if="state.user.dept" effect="dark" :content="state.postGroup" placement="top-start">
+                           <div class="pull-right dept-class">{{ state.user.dept.deptName }} / {{ state.postGroup }}</div>
+                        </el-tooltip>
                      </li>
                      <li class="list-group-item">
                         <svg-icon icon-class="peoples" />所属角色
@@ -85,3 +87,13 @@ function getUser() {
 
 getUser();
 </script>
+
+<style scoped>
+.dept-class{
+   overflow:hidden;
+   text-overflow:ellipsis;
+   white-space:nowrap;
+   width: 127px;
+}
+
+</style>

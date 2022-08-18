@@ -135,7 +135,6 @@
                <el-table-column label="真实姓名" align="center" key="realName" prop="realName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
                <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
                <el-table-column label="手机号码" align="center" key="mobile" prop="mobile" v-if="columns[4].visible" width="120" />
-               <!-- <el-table-column label="状态" align="center" key="status" prop="status" v-if="columns[5].visible" width="120" /> -->
                <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
                   <template #default="scope">
                      <el-switch
@@ -278,7 +277,7 @@
                            :key="item.id"
                            :label="item.postName"
                            :value="item.id"
-                           :disabled="item.status == 1"
+                           :disabled="item.status == '0'"
                         ></el-option>
                      </el-select>
                   </el-form-item>
@@ -291,7 +290,7 @@
                            :key="item.id"
                            :label="item.roleName"
                            :value="item.id"
-                           :disabled="item.status == 1"
+                           :disabled="item.status == '0'"
                         ></el-option>
                      </el-select>
                   </el-form-item>
@@ -438,10 +437,14 @@ function getTreeselect() {
 /** 查询用户列表 */
 function getList() {
   loading.value = true;
-  listUser(proxy.addDateRange(queryParams.value, dateRange.value, 'created_at')).then(res => {
+  listUser(proxy.addDateRange(queryParams.value, dateRange.value, 'created_at'))
+  .then(res => {
     loading.value = false;
     userList.value = res.data.rows;
     total.value = res.data.total;
+  })
+  .catch(res => {
+    loading.value = false;
   });
 };
 /** 节点单击事件 */

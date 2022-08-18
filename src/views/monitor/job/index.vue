@@ -88,7 +88,7 @@
 
       <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="任务编号" width="100" align="center" prop="jobId" />
+         <el-table-column label="任务编号" width="100" align="center" prop="id" />
          <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
          <el-table-column label="任务组名" align="center" prop="jobGroup">
             <template #default="scope">
@@ -101,8 +101,8 @@
             <template #default="scope">
                <el-switch
                   v-model="scope.row.status"
-                  active-value="0"
-                  inactive-value="1"
+                  active-value="1"
+                  inactive-value="0"
                   @change="handleStatusChange(scope.row)"
                ></el-switch>
             </template>
@@ -156,7 +156,7 @@
       <pagination
          v-show="total > 0"
          :total="total"
-         v-model:page="queryParams.pageNum"
+         v-model:page="queryParams.page"
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
@@ -257,7 +257,7 @@
          <el-form :model="form" label-width="120px">
             <el-row>
                <el-col :span="12">
-                  <el-form-item label="任务编号：">{{ form.jobId }}</el-form-item>
+                  <el-form-item label="任务编号：">{{ form.id }}</el-form-item>
                   <el-form-item label="任务名称：">{{ form.jobName }}</el-form-item>
                </el-col>
                <el-col :span="12">
@@ -275,8 +275,8 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="任务状态：">
-                     <div v-if="form.status == 0">正常</div>
-                     <div v-else-if="form.status == 1">失败</div>
+                     <div v-if="form.status == 1">正常</div>
+                     <div v-else-if="form.status == 0">失败</div>
                   </el-form-item>
                </el-col>
                <el-col :span="12">
@@ -327,7 +327,7 @@ const expression = ref("");
 const data = reactive({
   form: {},
   queryParams: {
-    pageNum: 1,
+    page: 1,
     pageSize: 10,
     jobName: undefined,
     jobGroup: undefined,
@@ -346,8 +346,8 @@ const { queryParams, form, rules } = toRefs(data);
 function getList() {
   loading.value = true;
   listJob(queryParams.value).then(response => {
-    jobList.value = response.rows;
-    total.value = response.total;
+    jobList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -363,7 +363,7 @@ function cancel() {
 /** 表单重置 */
 function reset() {
   form.value = {
-    jobId: undefined,
+    id: undefined,
     jobName: undefined,
     jobGroup: undefined,
     invokeTarget: undefined,
@@ -376,7 +376,7 @@ function reset() {
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1;
+  queryParams.value.page = 1;
   getList();
 }
 /** 重置按钮操作 */
@@ -386,7 +386,7 @@ function resetQuery() {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.jobId);
+  ids.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -408,9 +408,9 @@ function handleCommand(command, row) {
 }
 // 任务状态修改
 function handleStatusChange(row) {
-  let text = row.status === "0" ? "启用" : "停用";
+  let text = row.status === "1" ? "启用" : "停用";
   proxy.$modal.confirm('确认要"' + text + '""' + row.jobName + '"任务吗?').then(function () {
-    return changeJobStatus(row.jobId, row.status);
+    return changeJobStatus(row.id, row.status);
   }).then(() => {
     proxy.$modal.msgSuccess(text + "成功");
   }).catch(function () {
@@ -420,14 +420,14 @@ function handleStatusChange(row) {
 /* 立即执行一次 */
 function handleRun(row) {
   proxy.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗?').then(function () {
-    return runJob(row.jobId, row.jobGroup);
+    return runJob(row.id, row.jobGroup);
   }).then(() => {
     proxy.$modal.msgSuccess("执行成功");})
   .catch(() => {});
 }
 /** 任务详细信息 */
 function handleView(row) {
-  getJob(row.jobId).then(response => {
+  getJob(row.id).then(response => {
     form.value = response.data;
     openView.value = true;
   });
@@ -443,7 +443,7 @@ function crontabFill(value) {
 }
 /** 任务日志列表查询 */
 function handleJobLog(row) {
-  const jobId = row.jobId || 0;
+  const jobId = row.id || 0;
   router.push({ path: "/monitor/job-log/index", query: { jobId: jobId } });
 }
 /** 新增按钮操作 */
@@ -455,7 +455,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const jobId = row.jobId || ids.value;
+  const jobId = row.id || ids.value;
   getJob(jobId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -466,7 +466,7 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["jobRef"].validate(valid => {
     if (valid) {
-      if (form.value.jobId != undefined) {
+      if (form.value.id != undefined) {
         updateJob(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
@@ -484,7 +484,7 @@ function submitForm() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const jobIds = row.jobId || ids.value;
+  const jobIds = row.id || ids.value;
   proxy.$modal.confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项?').then(function () {
     return delJob(jobIds);
   }).then(() => {

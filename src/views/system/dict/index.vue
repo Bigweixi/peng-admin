@@ -235,7 +235,7 @@ function reset() {
     id: undefined,
     dictName: undefined,
     dictType: undefined,
-    status: "0",
+    status: "1",
     remark: undefined
   };
   proxy.resetForm("dictRef");

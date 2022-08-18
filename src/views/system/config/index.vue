@@ -98,7 +98,7 @@
 
       <el-table v-loading="loading" :data="configList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="参数主键" align="center" prop="configId" />
+         <el-table-column label="参数主键" align="center" prop="id" />
          <el-table-column label="参数名称" align="center" prop="configName" :show-overflow-tooltip="true" />
          <el-table-column label="参数键名" align="center" prop="configKey" :show-overflow-tooltip="true" />
          <el-table-column label="参数键值" align="center" prop="configValue" />
@@ -108,9 +108,9 @@
             </template>
          </el-table-column>
          <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-         <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+         <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
             <template #default="scope">
-               <span>{{ parseTime(scope.row.createTime) }}</span>
+               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
          </el-table-column>
          <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
@@ -134,7 +134,7 @@
       <pagination
          v-show="total > 0"
          :total="total"
-         v-model:page="queryParams.pageNum"
+         v-model:page="queryParams.page"
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
@@ -194,7 +194,7 @@ const dateRange = ref([]);
 const data = reactive({
   form: {},
   queryParams: {
-    pageNum: 1,
+    page: 1,
     pageSize: 10,
     configName: undefined,
     configKey: undefined,
@@ -212,9 +212,9 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询参数列表 */
 function getList() {
   loading.value = true;
-  listConfig(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    configList.value = response.rows;
-    total.value = response.total;
+  listConfig(proxy.addDateRange(queryParams.value, dateRange.value, 'created_at')).then(response => {
+    configList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -226,7 +226,7 @@ function cancel() {
 /** 表单重置 */
 function reset() {
   form.value = {
-    configId: undefined,
+    id: undefined,
     configName: undefined,
     configKey: undefined,
     configValue: undefined,
@@ -237,7 +237,7 @@ function reset() {
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1;
+  queryParams.value.page = 1;
   getList();
 }
 /** 重置按钮操作 */
@@ -248,7 +248,7 @@ function resetQuery() {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.configId);
+  ids.value = selection.map(item => item.id);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
@@ -261,7 +261,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  const configId = row.configId || ids.value;
+  const configId = row.id || ids.value;
   getConfig(configId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -272,8 +272,8 @@ function handleUpdate(row) {
 function submitForm() {
   proxy.$refs["configRef"].validate(valid => {
     if (valid) {
-      if (form.value.configId != undefined) {
-        updateConfig(form.value).then(response => {
+      if (form.value.id != undefined) {
+        updateConfig(form.value, form.value.id).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
@@ -290,7 +290,7 @@ function submitForm() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const configIds = row.configId || ids.value;
+  const configIds = row.id || ids.value;
   proxy.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function () {
     return delConfig(configIds);
   }).then(() => {

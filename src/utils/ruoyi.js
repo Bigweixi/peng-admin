@@ -71,6 +71,7 @@ export function selectDictLabel(datas, value) {
   if (value === undefined) {
     return "";
   }
+
   var actions = [];
   Object.keys(datas).some((key) => {
     if (datas[key].value == ('' + value)) {
@@ -81,6 +82,7 @@ export function selectDictLabel(datas, value) {
   if (actions.length === 0) {
     actions.push(value);
   }
+  console.log(datas);
   return actions.join('');
 }
 

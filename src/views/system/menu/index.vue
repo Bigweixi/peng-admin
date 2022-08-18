@@ -113,13 +113,26 @@
                      />
                   </el-form-item>
                </el-col>
-               <el-col :span="24">
+               <el-col :span="12">
                   <el-form-item label="菜单类型" prop="menuType">
                      <el-radio-group v-model="form.menuType">
                         <el-radio label="M">目录</el-radio>
                         <el-radio label="C">菜单</el-radio>
                         <el-radio label="F">按钮</el-radio>
                      </el-radio-group>
+                  </el-form-item>
+               </el-col>
+               <el-col :span="12" v-if="form.menuType == 'C'">
+                 <el-form-item>
+                     <el-input v-model="form.auth" placeholder="请输入控制器名称" maxlength="100" />
+                     <template #label>
+                        <span>
+                           <el-tooltip content="后端控制器名称，如：SysUserController::index" placement="top">
+                              <el-icon><question-filled /></el-icon>
+                           </el-tooltip>
+                           控制器
+                        </span>
+                     </template>
                   </el-form-item>
                </el-col>
                <el-col :span="24" v-if="form.menuType != 'F'">
@@ -204,7 +217,7 @@
                      <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
                      <template #label>
                         <span>
-                           <el-tooltip content="后端的权限字符，如：system:user:index" placement="top">
+                           <el-tooltip content="控制前端是否显示的权限字符，如：system:user:index" placement="top">
                               <el-icon><question-filled /></el-icon>
                            </el-tooltip>
                            权限字符
@@ -277,6 +290,19 @@
                            :label="dict.value"
                         >{{ dict.label }}</el-radio>
                      </el-radio-group>
+                  </el-form-item>
+               </el-col>
+                <el-col :span="12" v-if="form.menuType == 'F'">
+                  <el-form-item>
+                     <el-input v-model="form.auth" placeholder="请输入控制器名称" maxlength="100" />
+                     <template #label>
+                        <span>
+                           <el-tooltip content="后端控制器名称，如：SysUserController::index" placement="top">
+                              <el-icon><question-filled /></el-icon>
+                           </el-tooltip>
+                           控制器
+                        </span>
+                     </template>
                   </el-form-item>
                </el-col>
             </el-row>
@@ -357,10 +383,11 @@ function reset() {
     icon: undefined,
     menuType: "M",
     orderNum: undefined,
-    isFrame: "1",
+    isFrame: "0",
     isCache: "0",
     visible: "0",
-    status: "0"
+    status: "1",
+    auth: undefined
   };
   proxy.resetForm("menuRef");
 }
@@ -422,7 +449,7 @@ function submitForm() {
   proxy.$refs["menuRef"].validate(valid => {
     if (valid) {
       if (form.value.id != undefined) {
-        updateMenu(form.value).then(response => {
+        updateMenu(form.value, form.value.id).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();

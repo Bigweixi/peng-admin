@@ -24,12 +24,12 @@
       </el-form>
       <el-table
          v-loading="loading"
-         :data="onlineList.slice((pageNum - 1) * pageSize, pageNum * pageSize)"
+         :data="onlineList.slice((page - 1) * pageSize, page * pageSize)"
          style="width: 100%;"
       >
          <el-table-column label="序号" width="50" type="index" align="center">
             <template #default="scope">
-               <span>{{ (pageNum - 1) * pageSize + scope.$index + 1 }}</span>
+               <span>{{ (page - 1) * pageSize + scope.$index + 1 }}</span>
             </template>
          </el-table-column>
          <el-table-column label="会话编号" align="center" prop="tokenId" :show-overflow-tooltip="true" />
@@ -56,7 +56,7 @@
          </el-table-column>
       </el-table>
 
-      <pagination v-show="total > 0" :total="total" v-model:page="pageNum" v-model:limit="pageSize" />
+      <pagination v-show="total > 0" :total="total" v-model:page="page" v-model:limit="pageSize" />
    </div>
 </template>
 
@@ -68,7 +68,7 @@ const { proxy } = getCurrentInstance();
 const onlineList = ref([]);
 const loading = ref(true);
 const total = ref(0);
-const pageNum = ref(1);
+const page = ref(1);
 const pageSize = ref(10);
 
 const queryParams = ref({
@@ -76,18 +76,18 @@ const queryParams = ref({
   userName: undefined
 });
 
-/** 查询登录日志列表 */
+/** 查询在线用户列表 */
 function getList() {
   loading.value = true;
   initData(queryParams.value).then(response => {
-    onlineList.value = response.rows;
-    total.value = response.total;
+    onlineList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
-  });
+  }).catch(() => loading.value = false);
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  pageNum.value = 1;
+  page.value = 1;
   getList();
 }
 /** 重置按钮操作 */
@@ -98,11 +98,11 @@ function resetQuery() {
 /** 强退按钮操作 */
 function handleForceLogout(row) {
     proxy.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?').then(function () {
-  return forceLogout(row.tokenId);
+  return forceLogout(row.id);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
+    proxy.$modal.msgSuccess("下线成功");
+  }).catch(() => loading.value = false);
 }
 
 getList();

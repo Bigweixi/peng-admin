@@ -84,8 +84,8 @@
 
       <el-table ref="logininforRef" v-loading="loading" :data="logininforList" @selection-change="handleSelectionChange" :default-sort="defaultSort" @sort-change="handleSortChange">
          <el-table-column type="selection" width="55" align="center" />
-         <el-table-column label="访问编号" align="center" prop="infoId" />
-         <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" sortable="custom" :sort-orders="['descending', 'ascending']" />
+         <el-table-column label="访问编号" align="center" prop="id" sortable />
+         <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true"/>
          <el-table-column label="地址" align="center" prop="ipaddr" :show-overflow-tooltip="true" />
          <el-table-column label="登录地点" align="center" prop="loginLocation" :show-overflow-tooltip="true" />
          <el-table-column label="操作系统" align="center" prop="os" :show-overflow-tooltip="true" />
@@ -95,7 +95,7 @@
                <dict-tag :options="sys_common_status" :value="scope.row.status" />
             </template>
          </el-table-column>
-         <el-table-column label="描述" align="center" prop="msg" />
+         <el-table-column label="描述" align="center" :show-overflow-tooltip="true" prop="msg" />
          <el-table-column label="访问时间" align="center" prop="loginTime" sortable="custom" :sort-orders="['descending', 'ascending']" width="180">
             <template #default="scope">
                <span>{{ parseTime(scope.row.loginTime) }}</span>
@@ -106,7 +106,7 @@
       <pagination
          v-show="total > 0"
          :total="total"
-         v-model:page="queryParams.pageNum"
+         v-model:page="queryParams.page"
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
@@ -130,7 +130,7 @@ const defaultSort = ref({ prop: "loginTime", order: "descending" });
 
 // 查询参数
 const queryParams = ref({
-  pageNum: 1,
+  page: 1,
   pageSize: 10,
   ipaddr: undefined,
   userName: undefined,
@@ -142,15 +142,15 @@ const queryParams = ref({
 /** 查询登录日志列表 */
 function getList() {
   loading.value = true;
-  list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    logininforList.value = response.rows;
-    total.value = response.total;
+  list(proxy.addDateRange(queryParams.value, dateRange.value, 'login_time')).then(response => {
+    logininforList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.value.pageNum = 1;
+  queryParams.value.page = 1;
   getList();
 }
 /** 重置按钮操作 */
@@ -162,18 +162,13 @@ function resetQuery() {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.infoId);
+  ids.value = selection.map(item => item.id);
   multiple.value = !selection.length;
 }
-/** 排序触发事件 */
-function handleSortChange(column, prop, order) {
-  queryParams.value.orderByColumn = column.prop;
-  queryParams.value.isAsc = column.order;
-  getList();
-}
+
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const infoIds = row.infoId || ids.value;
+  const infoIds = row.id || ids.value;
   proxy.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?').then(function () {
     return delLogininfor(infoIds);
   }).then(() => {

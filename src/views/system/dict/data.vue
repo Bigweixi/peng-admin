@@ -269,7 +269,7 @@ function reset() {
     cssClass: undefined,
     listClass: "default",
     dictSort: 0,
-    status: "0",
+    status: "1",
     remark: undefined
   };
   proxy.resetForm("dataRef");

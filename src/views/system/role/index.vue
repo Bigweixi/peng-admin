@@ -102,8 +102,8 @@
             <template #default="scope">
                <el-switch
                   v-model="scope.row.status"
-                  active-value="0"
-                  inactive-value="1"
+                  active-value="1"
+                  inactive-value="0"
                   @change="handleStatusChange(scope.row)"
                ></el-switch>
             </template>
@@ -399,7 +399,7 @@ function reset() {
     id: undefined,
     roleName: undefined,
     roleSort: 0,
-    status: "0",
+    status: "1",
     menuIds: [],
     deptIds: [],
     menuCheckStrictly: true,

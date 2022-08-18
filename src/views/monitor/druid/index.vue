@@ -1,6 +1,7 @@
 <template>
    <div>
-      <i-frame v-model:src="url"></i-frame>
+      <h1>暂未开发...</h1>
+      <!-- <i-frame v-model:src="url"></i-frame> -->
    </div>
 </template>
 
