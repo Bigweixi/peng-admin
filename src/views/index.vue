@@ -20,7 +20,7 @@
 //     onUnmounted(() => {
 //       echart.dispose;
 //     });
-	
+
 //     // 基础配置一下Echarts
 //     function initChart() {
 //       let chart = echart.init(document.getElementById("myEcharts"), "dark");
