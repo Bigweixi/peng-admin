@@ -67,7 +67,7 @@
                plain
                icon="Delete"
                @click="handleClean"
-               v-hasPermi="['monitor:logininfor:remove']"
+               v-hasPermi="['monitor:logininfor:clear']"
             >清空</el-button>
          </el-col>
          <el-col :span="1.5">

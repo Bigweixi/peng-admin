@@ -1,3 +1,13 @@
+/*
+ * @Author: peng 1925186789@qq.com
+ * @Date: 2022-06-21 15:16:20
+ * @LastEditors: peng 1925186789@qq.com
+ * @LastEditTime: 2023-01-03 21:34:31
+ * @FilePath: /peng-admin/src/store/modules/user.js
+ * @Description: 
+ * 
+ * Copyright (c) 2023 by peng 1925186789@qq.com, All Rights Reserved. 
+ */
 import { login, logout, getInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import defAva from '@/assets/images/profile.jpg'
@@ -20,7 +30,7 @@ const useUserStore = defineStore(
         const uuid = userInfo.uuid
         return new Promise((resolve, reject) => {
           login(username, password, code, uuid).then(res => {
-            setToken(res.data.token)
+            setToken(res.data.accessToken)
             this.token = res.data.token
             resolve()
           }).catch(error => {

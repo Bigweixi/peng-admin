@@ -1,3 +1,13 @@
+/*
+ * @Author: peng 1925186789@qq.com
+ * @Date: 2022-10-13 11:37:23
+ * @LastEditors: peng 1925186789@qq.com
+ * @LastEditTime: 2023-01-07 11:55:57
+ * @FilePath: /peng-admin/src/api/monitor/logininfor.js
+ * @Description: 
+ * 
+ * Copyright (c) 2023 by peng 1925186789@qq.com, All Rights Reserved. 
+ */
 import request from '@/utils/request'
 
 // 查询登录日志列表
@@ -28,7 +38,7 @@ export function unlockLogininfor(userName) {
 // 清空登录日志
 export function cleanLogininfor() {
   return request({
-    url: '/monitor/logininfor/clean',
-    method: 'post'
+    url: '/monitor/logininfor-clear',
+    method: 'delete'
   })
 }

@@ -486,8 +486,8 @@ function getMenuAllCheckedKeys() {
   // 目前被选中的菜单节点
   let checkedKeys = menuRef.value.getCheckedKeys();
   // 半选中的菜单节点
-  let halfCheckedKeys = menuRef.value.getHalfCheckedKeys();
-  checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+  // let halfCheckedKeys = menuRef.value.getHalfCheckedKeys();
+  // checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
   return checkedKeys;
 }
 /** 提交按钮 */
@@ -523,6 +523,7 @@ function dataScopeSelectChange(value) {
     deptRef.value.setCheckedKeys([]);
   }
 }
+
 /** 分配数据权限操作 */
 function handleDataScope(row) {
   reset();

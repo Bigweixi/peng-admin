@@ -481,7 +481,7 @@ function handleExport() {
 };
 /** 用户状态修改  */
 function handleStatusChange(row) {
-  let text = row.status === "0" ? "启用" : "停用";
+  let text = row.status === "1" ? "启用" : "停用";
   proxy.$modal.confirm('确认要"' + text + '""' + row.name + '"用户吗?').then(function () {
     return changeUserStatus(row.id, row.status);
   }).then(() => {

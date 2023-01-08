@@ -1,3 +1,13 @@
+/*
+ * @Author: peng 1925186789@qq.com
+ * @Date: 2022-10-13 11:37:23
+ * @LastEditors: peng 1925186789@qq.com
+ * @LastEditTime: 2023-01-07 15:40:01
+ * @FilePath: /peng-admin/src/api/system/dept.js
+ * @Description: 
+ * 
+ * Copyright (c) 2023 by peng 1925186789@qq.com, All Rights Reserved. 
+ */
 import request from '@/utils/request'
 
 // 查询部门列表
@@ -48,5 +58,19 @@ export function delDept(deptId) {
   return request({
     url: '/system/dept/' + deptId,
     method: 'delete'
+  })
+}
+
+export function treeselect() {
+  return request({
+    url: '/system/dept/treeselect',
+    method: 'get'
+  })
+}
+
+export function roleDeptTreeselect(id) {
+  return request({
+    url: '/system/dept/roleDeptTreeselect/' + id,
+    method: 'get'
   })
 }
