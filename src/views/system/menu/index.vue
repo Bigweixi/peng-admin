@@ -6,11 +6,12 @@
                v-model="queryParams.menuName"
                placeholder="请输入菜单名称"
                clearable
+               style="width: 200px"
                @keyup.enter="handleQuery"
             />
          </el-form-item>
          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="菜单状态" clearable>
+            <el-select v-model="queryParams.status" placeholder="菜单状态" clearable style="width: 200px">
                <el-option
                   v-for="dict in sys_normal_disable"
                   :key="dict.value"
@@ -36,7 +37,7 @@
             >新增</el-button>
          </el-col>
          <el-col :span="1.5">
-            <el-button 
+            <el-button
                type="info"
                plain
                icon="Sort"
@@ -73,26 +74,11 @@
                <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
          </el-table-column>
-         <el-table-column label="操作" align="center" width="200" class-name="small-padding fixed-width">
+         <el-table-column label="操作" align="center" width="210" class-name="small-padding fixed-width">
             <template #default="scope">
-               <el-button
-                  type="text"
-                  icon="Edit"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:menu:edit']"
-               >修改</el-button>
-               <el-button
-                  type="text"
-                  icon="Plus"
-                  @click="handleAdd(scope.row)"
-                  v-hasPermi="['system:menu:add']"
-               >新增</el-button>
-               <el-button
-                  type="text"
-                  icon="Delete"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:menu:remove']"
-               >删除</el-button>
+               <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:menu:edit']">修改</el-button>
+               <el-button link type="primary" icon="Plus" @click="handleAdd(scope.row)" v-hasPermi="['system:menu:add']">新增</el-button>
+               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:menu:remove']">删除</el-button>
             </template>
          </el-table-column>
       </el-table>
@@ -113,7 +99,7 @@
                      />
                   </el-form-item>
                </el-col>
-               <el-col :span="12">
+               <el-col :span="24">
                   <el-form-item label="菜单类型" prop="menuType">
                      <el-radio-group v-model="form.menuType">
                         <el-radio label="M">目录</el-radio>
@@ -145,7 +131,7 @@
                         @show="showSelectIcon"
                      >
                         <template #reference>
-                           <el-input v-model="form.icon" placeholder="点击选择图标" @click="showSelectIcon" v-click-outside="hideSelectIcon" readonly>
+                           <el-input v-model="form.icon" placeholder="点击选择图标" @blur="showSelectIcon" v-click-outside="hideSelectIcon" readonly>
                               <template #prefix>
                                  <svg-icon
                                     v-if="form.icon"
@@ -217,7 +203,7 @@
                      <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
                      <template #label>
                         <span>
-                           <el-tooltip content="控制前端是否显示的权限字符，如：system:user:index" placement="top">
+                           <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)" placement="top">
                               <el-icon><question-filled /></el-icon>
                            </el-tooltip>
                            权限字符

@@ -19,6 +19,7 @@
                   :expand-on-click-node="false"
                   :filter-node-method="filterNode"
                   ref="deptTreeRef"
+                  node-key="id"
                   highlight-current
                   default-expand-all
                   @node-click="handleNodeClick"
@@ -153,36 +154,16 @@
                <el-table-column label="操作" align="center" width="150" class-name="small-padding fixed-width">
                   <template #default="scope">
                      <el-tooltip content="修改" placement="top" v-if="scope.row.id !== 1">
-                        <el-button
-                           type="text"
-                           icon="Edit"
-                           @click="handleUpdate(scope.row)"
-                           v-hasPermi="['system:user:edit']"
-                        ></el-button>
+                        <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:user:edit']"></el-button>
                      </el-tooltip>
                      <el-tooltip content="删除" placement="top" v-if="scope.row.id !== 1">
-                        <el-button
-                           type="text"
-                           icon="Delete"
-                           @click="handleDelete(scope.row)"
-                           v-hasPermi="['system:user:remove']"
-                        ></el-button>
+                        <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:user:remove']"></el-button>
                      </el-tooltip>
-                     <el-tooltip content="重置密码" placement="top" v-if="scope.row.userId !== 1">
-                        <el-button
-                           type="text"
-                           icon="Key"
-                           @click="handleResetPwd(scope.row)"
-                           v-hasPermi="['system:user:resetPwd']"
-                        ></el-button>
+                     <el-tooltip content="重置密码" placement="top" v-if="scope.row.id !== 1">
+                         <el-button link type="primary" icon="Key" @click="handleResetPwd(scope.row)" v-hasPermi="['system:user:resetPwd']"></el-button>
                      </el-tooltip>
                      <el-tooltip content="分配角色" placement="top" v-if="scope.row.id !== 1">
-                        <el-button
-                           type="text"
-                           icon="CircleCheck"
-                           @click="handleAuthRole(scope.row)"
-                           v-hasPermi="['system:user:edit']"
-                        ></el-button>
+                        <el-button link type="primary" icon="CircleCheck" @click="handleAuthRole(scope.row)" v-hasPermi="['system:user:edit']"></el-button>
                      </el-tooltip>
                   </template>
                </el-table-column>
@@ -429,7 +410,7 @@ watch(deptName, val => {
   proxy.$refs["deptTreeRef"].filter(val);
 });
 /** 查询部门下拉树结构 */
-function getTreeselect() {
+function getDeptTree() {
    treeselect().then(response => {
       deptOptions.value = response.data;
    });
@@ -445,6 +426,8 @@ function getList() {
   })
   .catch(res => {
     loading.value = false;
+    userList.value = res.rows;
+    total.value = res.total;
   });
 };
 /** 节点单击事件 */
@@ -461,6 +444,8 @@ function handleQuery() {
 function resetQuery() {
   dateRange.value = [];
   proxy.resetForm("queryRef");
+  queryParams.value.deptId = undefined;
+  proxy.$refs.tree.setCurrentKey(null);
   handleQuery();
 };
 /** 删除按钮操作 */
@@ -589,7 +574,7 @@ function cancel() {
 /** 新增按钮操作 */
 function handleAdd() {
   reset();
-  initTreeData();
+  // initTreeData();
   getUser('NaN').then(response => {
     postOptions.value = response.data.posts;
     roleOptions.value = response.data.roles;
@@ -601,7 +586,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
-  initTreeData();
+  // initTreeData();
   const userId = row.id || ids.value;
   getUser(userId).then(response => {
     form.value = response.data;
@@ -635,6 +620,6 @@ function submitForm() {
   });
 };
 
-getTreeselect();
+getDeptTree();
 getList();
 </script>

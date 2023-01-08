@@ -1,6 +1,6 @@
 <template>
    <div class="app-container">
-      <el-form :model="queryParams" ref="queryRef" v-show="showSearch" :inline="true">
+      <el-form :model="queryParams" ref="queryRef" v-show="showSearch" :inline="true" label-width="68px">
          <el-form-item label="角色名称" prop="roleName">
             <el-input
                v-model="queryParams.roleName"
@@ -116,36 +116,16 @@
          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-tooltip content="修改" placement="top" v-if="scope.row.id !== 1">
-                <el-button
-                  type="text"
-                  icon="Edit"
-                  @click="handleUpdate(scope.row)"
-                  v-hasPermi="['system:role:edit']"
-                ></el-button>
+                <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:role:edit']"></el-button>
               </el-tooltip>
               <el-tooltip content="删除" placement="top" v-if="scope.row.id !== 1">
-                <el-button
-                  type="text"
-                  icon="Delete"
-                  @click="handleDelete(scope.row)"
-                  v-hasPermi="['system:role:remove']"
-                ></el-button>
+                <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:role:remove']"></el-button>
               </el-tooltip>
               <el-tooltip content="数据权限" placement="top" v-if="scope.row.id !== 1">
-                <el-button
-                  type="text"
-                  icon="CircleCheck"
-                  @click="handleDataScope(scope.row)"
-                  v-hasPermi="['system:role:edit']"
-                ></el-button>
+                <el-button link type="primary" icon="CircleCheck" @click="handleDataScope(scope.row)" v-hasPermi="['system:role:edit']"></el-button>
               </el-tooltip>
               <el-tooltip content="分配用户" placement="top" v-if="scope.row.id !== 1">
-                <el-button
-                  type="text"
-                  icon="User"
-                  @click="handleAuthUser(scope.row)"
-                  v-hasPermi="['system:role:edit']"
-                ></el-button>
+                <el-button link type="primary" icon="User" @click="handleAuthUser(scope.row)" v-hasPermi="['system:role:edit']"></el-button>
               </el-tooltip>
             </template>
          </el-table-column>
@@ -486,8 +466,8 @@ function getMenuAllCheckedKeys() {
   // 目前被选中的菜单节点
   let checkedKeys = menuRef.value.getCheckedKeys();
   // 半选中的菜单节点
-  // let halfCheckedKeys = menuRef.value.getHalfCheckedKeys();
-  // checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+  let halfCheckedKeys = menuRef.value.getHalfCheckedKeys();
+  checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
   return checkedKeys;
 }
 /** 提交按钮 */
@@ -523,7 +503,6 @@ function dataScopeSelectChange(value) {
     deptRef.value.setCheckedKeys([]);
   }
 }
-
 /** 分配数据权限操作 */
 function handleDataScope(row) {
   reset();
@@ -534,7 +513,6 @@ function handleDataScope(row) {
     nextTick(() => {
       roleDeptTreeselect.then(res => {
         nextTick(() => {
-          console.log(res.data);
           if (deptRef.value) {
             deptRef.value.setCheckedKeys(res.data.checkedKeys);
           }
